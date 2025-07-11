@@ -1,7 +1,16 @@
 <div class="container">
   <div class="main">
-    <div class="editor-container">
-      <div class="editor" #editor></div>
+    <div class="editor" #editor>
+      <div class="action-btns">
+        <button class="btn btn-run" type="button" (click)="onRunQuery()">Run<span class="short-key">&lpar;Ctrl+Enter&rpar;</span></button>
+        <button class="btn btn-save" type="button" (click)="onSave()">Save<span class="short-key">&lpar;Ctrl+S&rpar;</span></button>
+      </div>
     </div>
+    <div class="query-result">
+
+    </div>
+  </div>
+  <div class="sidebar-history">
+
   </div>
 </div>
