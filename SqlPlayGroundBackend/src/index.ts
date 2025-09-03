@@ -4,14 +4,14 @@ import cors from "cors"
 import { queryRouter } from "./routes/query.route";
 
 const server = express();
-const PORT:number = Number(process.env.PORT ?? 3000)
+const PORT:number = process.env.NODE_ENV === "development" ? 3000 : Number(process.env.PORT)
 
 server.use(express.json());
 server.use(express.urlencoded({extended:true}));
 
 server.use(cors({
     credentials: true,
-    origin: ["https://4200-firebase-sql-playground-1752058990341.cluster-fkltigo73ncaixtmokrzxhwsfc.cloudworkstations.dev/"],
+    origin: ["http://localhost:3000"],
     optionsSuccessStatus: 200,
     methods: ["GET", "POST", "PUT", "DELETE"],
 }))
