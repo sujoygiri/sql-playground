@@ -14,12 +14,12 @@ const pool = new Pool(poolConfig);
 
 export const poolQuery = (text: string, params?: any[]) => pool.query(text, params);
 
-export const getDbClient = (userDetails: { sessionId: string, password: string, dbName: string }): Client => {
+export const getDbClient = (userDetails: { sessionId: string, password: string }): Client => {
     const clientConfig: ClientConfig = {
         host: process.env.PGHOST,
         user: userDetails.sessionId,
         password: userDetails.password,
-        database: userDetails.dbName,
+        database: userDetails.sessionId,
         port: Number(process.env.PGPORT)
     }
     const dbClient = new Client(clientConfig);
