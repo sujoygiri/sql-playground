@@ -7,11 +7,10 @@ import { Observable } from 'rxjs';
 })
 export class AppService {
 
-  BASE_URL:string = `https://3000-firebase-sql-playground-1752058990341.cluster-fkltigo73ncaixtmokrzxhwsfc.cloudworkstations.dev`
-
+  BASE_URL:string = "http://localhost:3000"
   constructor(private httpClient:HttpClient) { }
 
   handelQueryRun(query:string):Observable<any>{
-    return this.httpClient.post(`${this.BASE_URL}/query/run-query`, {query})
+    return this.httpClient.get(`${this.BASE_URL}/user/create-role`)
   }
 }

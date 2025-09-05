@@ -8,7 +8,7 @@ function getHashedPassword(sessionId: string): string {
     return hashedPassword;
 }
 
-async function roleExistOrCreate(sessionId: string) {
+export async function createRole(sessionId: string) {
     try {
         const isRoleExistQuery = `SELECT rolname FROM pg_roles WHERE rolname=$1`;
         const isRoleExistQueryResult = await poolQuery(isRoleExistQuery,[sessionId]);
@@ -25,7 +25,7 @@ async function roleExistOrCreate(sessionId: string) {
     }
 }
 
-async function dbExistOrCreate(sessionId: string) {
+export async function createDb(sessionId: string) {
     try {
         const isDbExistQuery = `SELECT datname FROM pg_database WHERE datname=$1`;
         const isDbExistQueryResult = await poolQuery(isDbExistQuery,[sessionId]);

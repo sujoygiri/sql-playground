@@ -1,9 +1,9 @@
 import {Router} from "express";
-import { createUserRole } from "../controller/user.controller";
+import { createUser } from "../controller/user.controller";
 
 const userRouter = Router();
 
-userRouter.get("/create-role", createUserRole)
+userRouter.get("/create", createUser)
 
 
 export default userRouter;

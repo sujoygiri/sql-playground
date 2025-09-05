@@ -13,9 +13,10 @@ server.use(express.urlencoded({ extended: true }));
 
 server.use(cors({
     credentials: true,
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:4200"],
     optionsSuccessStatus: 200,
     methods: ["GET", "POST", "PUT", "DELETE"],
+    exposedHeaders: "_SSID",
 }))
 
 server.get("/", (req: Request, res: Response, next: NextFunction) => {
