@@ -4,8 +4,7 @@ export const createUserDataTable = async () => {
     try {
         const query = `
         CREATE TABLE IF NOT EXISTS userdata (
-            id CHAR(10) PRIMARY KEY,
-            password CHAR(10) NOT NULL,
+            id CHAR(20) PRIMARY KEY,
             last_login_time TIMESTAMP WITH TIME ZONE
         );
         ` 

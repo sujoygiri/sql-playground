@@ -5,14 +5,16 @@ export const globalInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next
   console.log(req.headers);
   const clonedRequest = req.clone({
     setHeaders: {
-      _SSID: String(localStorage.getItem("_SSID"))
+      _ssid: localStorage.getItem("_ssid") ?? ''
     }
   })
   return next(clonedRequest).pipe(tap((event: HttpEvent<any>) => {
     if(event instanceof HttpResponse){
-      const userSessionId = event.headers.get('_SSID');
+      const userSessionId = event.headers.get('_ssid');
+      console.log(userSessionId);
+      
       if(userSessionId){
-        window.localStorage.setItem('_SSID', userSessionId);
+        window.localStorage.setItem('_ssid', userSessionId);
       }
     }
   }))

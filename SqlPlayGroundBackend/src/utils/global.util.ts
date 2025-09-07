@@ -1,11 +1,13 @@
 import crypto from "node:crypto"
-
 import { poolQuery } from "../db/connection.db";
+import { AppError } from "./errorHandler.util";
 
-function getHashedPassword(sessionId: string): string {
-    const salt = String(process.env.SALT);
-    const hashedPassword = crypto.scryptSync(sessionId,salt,10).toString("hex");
-    return hashedPassword;
+export function getHashedPassword(sessionId: string) {
+    const passwordSalt = process.env.SALT
+    if( passwordSalt && typeof passwordSalt === 'string'){
+        const hashedPassword = crypto.scryptSync(sessionId,passwordSalt,10).toString("hex");
+        return hashedPassword;
+    }
 }
 
 export async function createRole(sessionId: string) {
@@ -16,12 +18,15 @@ export async function createRole(sessionId: string) {
             return;
         } else {
             const hashedPassword = getHashedPassword(sessionId);
-            const roleCreationQuery = `CREATE ROLE $1 WITH LOGIN PASSWORD $2 CONNECTION LIMIT 5`;
-            await poolQuery(roleCreationQuery,[sessionId, hashedPassword]);
+            // Escape identifiers and literals to prevent SQL injection
+            // const safeSessionId = `"${sessionId.replace(/"/g, '""')}"`;
+            // const safePassword = `'${hashedPassword.replace(/'/g, "''")}'`;
+            const roleCreationQuery = `CREATE ROLE "${sessionId}" WITH LOGIN PASSWORD '${hashedPassword}' CONNECTION LIMIT 5`;
+            await poolQuery(roleCreationQuery);
         }
     } catch (error) {
         console.log(error);
-        throw new Error(error);
+        throw new AppError(error);
     }
 }
 
@@ -32,11 +37,18 @@ export async function createDb(sessionId: string) {
         if(isDbExistQueryResult.rowCount !== 0) {
             return;
         } else {
-            const dbCreationQuery = `CREATE DATABASE $1 WITH OWNER=$1 CONNECTION LIMIT=5`;
-            await poolQuery(dbCreationQuery,[sessionId]);
+            // Set role to the sessionId before creating the database
+            // await poolQuery(`SET ROLE "${sessionId}"`);
+            const dbCreationQuery = `CREATE DATABASE "${sessionId}" WITH OWNER='${sessionId}'`;
+            await poolQuery(dbCreationQuery);
         }
     } catch (error) {
         console.log(error);
-        throw new Error(error);
+        throw new AppError(error);
     }
+}
+
+export function isSessionIdValid(sessionId: string):boolean {
+    const sessionIdRegex = /^[a-zA-Z0-9]{20}$/;
+    return sessionIdRegex.test(String(sessionId));
 }

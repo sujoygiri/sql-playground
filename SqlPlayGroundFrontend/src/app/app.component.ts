@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
 import { EditorView, basicSetup } from "codemirror";
 import { PostgreSQL, sql } from "@codemirror/lang-sql";
 import { autocompletion } from "@codemirror/autocomplete";
 import { oneDark, color } from "@codemirror/theme-one-dark"
 import { AppService } from './app.service';
-
 
 @Component({
   selector: 'app-root',
@@ -13,23 +12,36 @@ import { AppService } from './app.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit, AfterViewInit {
   title = 'SqlPlayGroundFrontend';
+  queryResultRows: any[] = [];
+  tableColumns: string[] = [];
+  queryResultString: string = "";
   editorView: EditorView | undefined;
   @ViewChild("editor", { static: true }) editorRef!: ElementRef;
 
   constructor(private appService: AppService) { }
+  ngOnInit(): void {
+    this.appService.sendProvisionRequest().subscribe({
+      next: (response) => {
+        console.log(response);
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    })
+  }
 
   ngAfterViewInit() {
     console.log(this.editorRef);
     (this.editorRef.nativeElement as HTMLElement).addEventListener("keydown", (event) => {
-      event.preventDefault();
       if (event.altKey) {
         switch (event.key) {
           case "s":
             this.onSave();
             break;
           case "Enter":
+            event.preventDefault();
             console.log("Alt + Enter");
             this.onRunQuery();
         }
@@ -60,17 +72,26 @@ export class AppComponent implements AfterViewInit {
   onRunQuery() {
     const query = this.editorView?.state.doc.toString();
     if (!query) {
-
-    } else {
-      this.appService.handelQueryRun(query).subscribe({
-        next: (res) => {
-          console.log(res);
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      })
+      return;
     }
+    this.appService.handelQueryRun(query).subscribe({
+      next: (res) => {
+        this.queryResultRows = [];
+        this.queryResultString = "";
+        this.tableColumns = [];
+        if(res.count !== 0 && res.rows.length){
+          this.tableColumns = Object.keys(res.rows[0]);
+          console.log(this.tableColumns);
+          this.queryResultRows = res.rows;
+        }else {
+          this.queryResultString = res.command && `${res.command} runes successfully`
+        }
+        console.log(res);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
   }
 
   onSave() {

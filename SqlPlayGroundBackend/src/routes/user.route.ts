@@ -5,5 +5,4 @@ const userRouter = Router();
 
 userRouter.get("/create", createUser)
 
-
 export default userRouter;

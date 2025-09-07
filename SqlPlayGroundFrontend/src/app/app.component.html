@@ -2,15 +2,33 @@
   <div class="main">
     <div class="editor" #editor>
       <div class="action-btns">
-        <button class="btn btn-run" type="button" (click)="onRunQuery()">Run<span class="short-key">&lpar;Ctrl+Enter&rpar;</span></button>
-        <button class="btn btn-save" type="button" (click)="onSave()">Save<span class="short-key">&lpar;Ctrl+S&rpar;</span></button>
+        <button class="btn btn-run" type="button" (click)="onRunQuery()">
+          Run<span class="short-key">&lpar;Ctrl+Enter&rpar;</span>
+        </button>
+        <button class="btn btn-save" type="button" (click)="onSave()">
+          Save<span class="short-key">&lpar;Ctrl+S&rpar;</span>
+        </button>
       </div>
     </div>
     <div class="query-result">
-
+      <div *ngIf="queryResultRows">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th *ngFor="let column of tableColumns">{{ column }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of queryResultRows; let i = index">
+              <td *ngFor="let column of tableColumns">{{ row[column] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="queryResultString ">
+        <div class="result-text">{{queryResultString}}</div>
+      </div>
     </div>
   </div>
-  <div class="sidebar-history">
-
-  </div>
+  <div class="sidebar-history"></div>
 </div>

@@ -16,7 +16,7 @@ server.use(cors({
     origin: ["http://localhost:4200"],
     optionsSuccessStatus: 200,
     methods: ["GET", "POST", "PUT", "DELETE"],
-    exposedHeaders: "_SSID",
+    exposedHeaders: "_ssid",
 }))
 
 server.get("/", (req: Request, res: Response, next: NextFunction) => {
