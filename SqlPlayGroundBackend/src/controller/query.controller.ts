@@ -1,28 +1,29 @@
 import { NextFunction, Request, Response } from "express"
 
 import * as db from "../db/connection.db"
-import { createDb, createRole, isSessionIdValid } from "../utils/global.util";
+import { isSessionIdValid, updateUserSession } from "../utils/global.util";
 import { AppError } from "../utils/errorHandler.util";
 
 export const handelQueryRun = async (req: Request, res: Response, next: NextFunction) => {
-    let sessionId = String(req.headers['_ssid']);
+    let sessionId = req.headers['_ssid'] ?? '';
+    if(Array.isArray(sessionId)) {
+        sessionId = sessionId[0] ?? '';
+    }
     const { query } = req.body;
     if (!isSessionIdValid(sessionId)) {
         throw new AppError("Session id not found or Invalid")
     }
-    await createRole(sessionId);
-    await createDb(sessionId);
     const dbClient = await db.getDbClient(sessionId);
     try {
         const result = await dbClient.query(query);
         res.setHeader('_ssid', sessionId);
-        res.status(200).json({ rows: result.rows, command: result.command, count: result.rowCount })
+        res.status(200).json({ rows: result.rows, command: result.command, count: result.rowCount, result })
     } catch (error) {
         console.log({msg:error.message});
-        
         throw new AppError(error.message)
     } finally {
         await dbClient.end();
+        await updateUserSession(sessionId);
     }
 }
 

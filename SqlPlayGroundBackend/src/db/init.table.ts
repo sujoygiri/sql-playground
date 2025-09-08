@@ -4,8 +4,8 @@ export const createUserDataTable = async () => {
     try {
         const query = `
         CREATE TABLE IF NOT EXISTS userdata (
-            id CHAR(20) PRIMARY KEY,
-            last_login_time TIMESTAMP WITH TIME ZONE
+            id CHAR(10) PRIMARY KEY,
+            last_login_time TIMESTAMPTZ DEFAULT NOW()
         );
         ` 
         return await poolQuery(query)

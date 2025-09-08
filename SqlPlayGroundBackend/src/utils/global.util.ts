@@ -49,6 +49,23 @@ export async function createDb(sessionId: string) {
 }
 
 export function isSessionIdValid(sessionId: string):boolean {
-    const sessionIdRegex = /^[a-zA-Z0-9]{20}$/;
+    const sessionIdRegex = /^[a-zA-Z]{10}$/;
     return sessionIdRegex.test(String(sessionId));
+}
+
+export async function createUserSession(sessionId: string) {
+    const createUserSessionQuery = `INSERT INTO userdata (id) VALUES ($1) ON CONFLICT (id) DO NOTHING`;
+    await poolQuery(createUserSessionQuery,[sessionId]);
+}
+
+export async function updateUserSession(sessionId: string) {
+    const sessionUpdateQuery = `UPDATE userdata SET last_login_time = CURRENT_TIMESTAMP WHERE id = $1`;
+    await poolQuery(sessionUpdateQuery, [sessionId]);
+}
+
+export async function removeUserSession() {
+    const sessionRemoveQuery = `SELECT id FROM userdata WHERE last_login_time < NOW() - INTERVAL '7 days'`;
+    const sessionRemoveQueryResult = await poolQuery(sessionRemoveQuery);
+    console.log(sessionRemoveQueryResult.rows);
+    
 }

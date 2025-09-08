@@ -5,6 +5,7 @@ import { PostgreSQL, sql } from "@codemirror/lang-sql";
 import { autocompletion } from "@codemirror/autocomplete";
 import { oneDark, color } from "@codemirror/theme-one-dark"
 import { AppService } from './app.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   queryResultRows: any[] = [];
   tableColumns: string[] = [];
   queryResultString: string = "";
+  queryErrorResponse: string = ""
   editorView: EditorView | undefined;
   @ViewChild("editor", { static: true }) editorRef!: ElementRef;
 
@@ -33,7 +35,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log(this.editorRef);
     (this.editorRef.nativeElement as HTMLElement).addEventListener("keydown", (event) => {
       if (event.altKey) {
         switch (event.key) {
@@ -70,26 +71,26 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   onRunQuery() {
+    this.queryResultString = "";
+    this.queryErrorResponse = "";
+    this.queryResultRows = [];
+    this.tableColumns = [];
     const query = this.editorView?.state.doc.toString();
     if (!query) {
       return;
     }
     this.appService.handelQueryRun(query).subscribe({
       next: (res) => {
-        this.queryResultRows = [];
-        this.queryResultString = "";
-        this.tableColumns = [];
         if(res.count !== 0 && res.rows.length){
           this.tableColumns = Object.keys(res.rows[0]);
-          console.log(this.tableColumns);
           this.queryResultRows = res.rows;
         }else {
           this.queryResultString = res.command && `${res.command} runes successfully`
         }
-        console.log(res);
       },
-      error: (err) => {
-        console.log(err);
+      error: (err: HttpErrorResponse) => {
+        // this.queryResultString = err.error.message;
+        this.queryErrorResponse = err.error.message;
       }
     })
   }

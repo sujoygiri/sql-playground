@@ -28,16 +28,14 @@ export function errorHandler(
     const statusCode = err.status ?? 500;
     const errorResponse = {
         success: false,
-        error: {
-            name: err.name ?? 'Error',
-            message: err.message || 'Internal Server Error',
-            details: err.details ?? null,
-            stack: process.env.NODE_ENV === 'production' ? undefined : err.stack,
-        },
+        name: err.name ?? 'Error',
+        message: err.message || 'Internal Server Error',
+        details: err.details ?? null,
     };
 
     // Log error (customize as needed)
     if (process.env.NODE_ENV === 'development') {
+        errorResponse['stack'] = err.stack
         console.error(`[${new Date().toISOString()}]`, err);
     }
 
