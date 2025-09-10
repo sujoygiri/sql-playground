@@ -1,29 +1,31 @@
-import { NextFunction, Request, Response } from "express"
+import { NextFunction, Request, Response } from "express";
+import { validationResult, matchedData } from "express-validator";
 
-import * as db from "../db/connection.db"
-import { isSessionIdValid, updateUserSession } from "../utils/global.util";
+import * as db from "../db/connection.db";
+import { updateUserSession } from "../utils/global.util";
 import { AppError } from "../utils/errorHandler.util";
 
 export const handelQueryRun = async (req: Request, res: Response, next: NextFunction) => {
-    let sessionId = req.headers['_ssid'] ?? '';
-    if(Array.isArray(sessionId)) {
-        sessionId = sessionId[0] ?? '';
+    const sessionIdValidationResult = validationResult(req);
+    if (sessionIdValidationResult.isEmpty()) {
+        const clientData = matchedData(req, { onlyValidData: true });
+        const sessionId = clientData['_ssid'];
+        const query = clientData['query'];
+        const dbClient = await db.getDbClient(sessionId);
+        try {
+            const result = await dbClient.query(query);
+            res.setHeader('_ssid', sessionId);
+            res.status(200).json({ rows: result.rows, command: result.command, count: result.rowCount, result })
+        } catch (error: any) {
+            console.log({ msg: error.message });
+            throw new AppError(error.message)
+        } finally {
+            await dbClient.end();
+            await updateUserSession(sessionId);
+        }
     }
-    const { query } = req.body;
-    if (!isSessionIdValid(sessionId)) {
+    else {
         throw new AppError("Session id not found or Invalid")
-    }
-    const dbClient = await db.getDbClient(sessionId);
-    try {
-        const result = await dbClient.query(query);
-        res.setHeader('_ssid', sessionId);
-        res.status(200).json({ rows: result.rows, command: result.command, count: result.rowCount, result })
-    } catch (error) {
-        console.log({msg:error.message});
-        throw new AppError(error.message)
-    } finally {
-        await dbClient.end();
-        await updateUserSession(sessionId);
     }
 }
 

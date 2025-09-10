@@ -26,7 +26,13 @@ export function errorHandler(
 ) {
     // Default values
     const statusCode = err.status ?? 500;
-    const errorResponse = {
+    const errorResponse: {
+        success: boolean;
+        name: string;
+        message: string;
+        details: Record<string, any> | string | null;
+        stack?: string;
+    } = {
         success: false,
         name: err.name ?? 'Error',
         message: err.message || 'Internal Server Error',

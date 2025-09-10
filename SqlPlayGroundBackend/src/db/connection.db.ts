@@ -29,7 +29,7 @@ export const getDbClient = async (sessionId: string)  => {
         const dbClient = new Client(clientConfig);
         await dbClient.connect()
         return dbClient;
-    } catch (error) {
+    } catch (error: any) {
         throw new AppError("Failed to create DB client", 500, error);
     }
 } 

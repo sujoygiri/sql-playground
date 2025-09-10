@@ -1,12 +1,14 @@
 import express, { NextFunction, Request, Response } from "express";
 import { setTimeout } from "timers";
-import cors from "cors"
+import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config({debug: true});
 
 import { queryRouter } from "./routes/query.route";
 import userRouter from "./routes/user.route";
 import { createUserDataTable } from "./db/init.table";
 import { errorHandler } from "./utils/errorHandler.util";
-import { removeUserSession } from "./utils/global.util";
+import { removeData } from "./utils/global.util";
 
 const server = express();
 const PORT: number = process.env.NODE_ENV === "development" ? 3000 : Number(process.env.PORT)
@@ -32,5 +34,5 @@ server.use(errorHandler);
 server.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
     await createUserDataTable();
-    setTimeout(removeUserSession, 1 * 60 * 60 * 1000);
+    setTimeout(removeData, 1 * 60 * 60 * 1000);
 })

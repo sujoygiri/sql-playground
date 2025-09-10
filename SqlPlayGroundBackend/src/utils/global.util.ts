@@ -1,6 +1,11 @@
 import crypto from "node:crypto"
+import {header, body} from "express-validator"
+
 import { poolQuery } from "../db/connection.db";
 import { AppError } from "./errorHandler.util";
+
+export const ssidHeaderValidationChain = () => header("_ssid").trim().notEmpty().escape().isAlpha("en-US");
+export const queryValidationChain = () => body("query").trim().notEmpty().isString();
 
 export function getHashedPassword(sessionId: string) {
     const passwordSalt = process.env.SALT
@@ -19,12 +24,12 @@ export async function createRole(sessionId: string) {
         } else {
             const hashedPassword = getHashedPassword(sessionId);
             // Escape identifiers and literals to prevent SQL injection
-            // const safeSessionId = `"${sessionId.replace(/"/g, '""')}"`;
+            const safeSessionId = `"${sessionId.replace(/"/g, '""')}"`;
             // const safePassword = `'${hashedPassword.replace(/'/g, "''")}'`;
-            const roleCreationQuery = `CREATE ROLE "${sessionId}" WITH LOGIN PASSWORD '${hashedPassword}' CONNECTION LIMIT 5`;
+            const roleCreationQuery = `CREATE ROLE "${safeSessionId}" WITH LOGIN PASSWORD '${hashedPassword}' CONNECTION LIMIT 5`;
             await poolQuery(roleCreationQuery);
         }
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
         throw new AppError(error);
     }
@@ -42,15 +47,10 @@ export async function createDb(sessionId: string) {
             const dbCreationQuery = `CREATE DATABASE "${sessionId}" WITH OWNER='${sessionId}'`;
             await poolQuery(dbCreationQuery);
         }
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
         throw new AppError(error);
     }
-}
-
-export function isSessionIdValid(sessionId: string):boolean {
-    const sessionIdRegex = /^[a-zA-Z]{10}$/;
-    return sessionIdRegex.test(String(sessionId));
 }
 
 export async function createUserSession(sessionId: string) {
@@ -63,9 +63,17 @@ export async function updateUserSession(sessionId: string) {
     await poolQuery(sessionUpdateQuery, [sessionId]);
 }
 
-export async function removeUserSession() {
+export async function removeData() {
     const sessionRemoveQuery = `SELECT id FROM userdata WHERE last_login_time < NOW() - INTERVAL '7 days'`;
     const sessionRemoveQueryResult = await poolQuery(sessionRemoveQuery);
     console.log(sessionRemoveQueryResult.rows);
-    
+    const inactiveSessions = sessionRemoveQueryResult.rows;
+    if(inactiveSessions.length && sessionRemoveQueryResult.rowCount) {
+        for(let index = 0; index < inactiveSessions.length; index++) {
+            const dbRemovalQuery = `DROP DATABASE IF EXISTS ${inactiveSessions[index]}`;
+            await poolQuery(dbRemovalQuery);
+            const roleRemoveQuery = `DROP ROLE IF EXISTS ${inactiveSessions[index]}`;
+            await poolQuery(roleRemoveQuery);
+        }
+    }
 }
