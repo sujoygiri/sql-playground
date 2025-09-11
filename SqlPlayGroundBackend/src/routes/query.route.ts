@@ -7,4 +7,4 @@ export const queryRouter = Router();
 
 queryRouter.post("/run-query", ssidHeaderValidationChain(), queryValidationChain(), handelQueryRun);
 
-queryRouter.get("/get-query-history", getQueryHistory)
+queryRouter.get("/history", getQueryHistory);

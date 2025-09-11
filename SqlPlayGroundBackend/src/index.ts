@@ -6,7 +6,7 @@ dotenv.config({debug: true});
 
 import { queryRouter } from "./routes/query.route";
 import userRouter from "./routes/user.route";
-import { createUserDataTable } from "./db/init.table";
+import { createRequiredTable } from "./db/init.table";
 import { errorHandler } from "./utils/errorHandler.util";
 import { removeData } from "./utils/global.util";
 
@@ -33,6 +33,6 @@ server.use(errorHandler);
 
 server.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
-    await createUserDataTable();
+    await createRequiredTable();
     setTimeout(removeData, 1 * 60 * 60 * 1000);
 })
