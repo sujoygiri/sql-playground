@@ -5,7 +5,7 @@ import { AppError } from "../utils/errorHandler.util";
 
 let poolConfig: PoolConfig = {};
 if(process.env.NODE_ENV === 'production') {
-    const connectionString = process.env.RAILWAY_PRIVATE_DB_LINK;
+    const connectionString = `postgresql://${process.env.PGUSER}:${process.env.DB_PASSWORD}@${process.env.PGHOST}/${process.env.PGDATABASE}?sslmode=require&channel_binding=require`;
     poolConfig = {
         connectionString,
     }
@@ -18,8 +18,8 @@ if(process.env.NODE_ENV === 'production') {
         port: Number(process.env.PGPORT),
     }
 }
+console.log(poolConfig);
 
-console.log(poolConfig)
 const pool = new Pool(poolConfig);
 
 export const poolQuery = (text: string, params?: any[]) => pool.query(text, params);
