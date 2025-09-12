@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import { validationResult, matchedData } from "express-validator";
 
 import { createDb, createRole, storeUserSession, getNewSessionId, isSessionExist } from "../utils/global.util";
-import { poolQuery } from "../db/connection.db";
 import { AppError } from "../utils/errorHandler.util";
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -23,6 +22,8 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
             res.status(200).json({ msg: 'success' });
         }
     } else {
+        console.log(sessionIdValidationResult.array());
+        
         throw new AppError("Invalid Session")
     }
 }

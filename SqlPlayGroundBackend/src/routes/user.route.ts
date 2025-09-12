@@ -5,6 +5,6 @@ import { ssidHeaderValidationChain } from "../utils/global.util";
 
 const userRouter = Router();
 
-userRouter.get("/create", ssidHeaderValidationChain(), createUser)
+userRouter.post("/create", ssidHeaderValidationChain(), createUser)
 
 export default userRouter;

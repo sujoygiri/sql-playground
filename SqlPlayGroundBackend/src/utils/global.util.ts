@@ -4,7 +4,7 @@ import { header, body } from "express-validator"
 import { poolQuery } from "../db/connection.db";
 import { AppError } from "./errorHandler.util";
 
-export const ssidHeaderValidationChain = () => header("_ssid").trim().escape().isAlpha("en-US");
+export const ssidHeaderValidationChain = () => header("_ssid").trim().escape().isString();
 export const queryValidationChain = () => body("query").trim().notEmpty().isString();
 
 export function getNewSessionId(): string {
