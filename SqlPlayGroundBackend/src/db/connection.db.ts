@@ -4,9 +4,8 @@ import { getHashedPassword } from "../utils/global.util";
 import { AppError } from "../utils/errorHandler.util";
 
 let poolConfig: PoolConfig = {};
-console.log(process.env)
 if(process.env.NODE_ENV === 'production') {
-    const connectionString = `postgresql://${process.env.PGUSER}:${process.env.DB_PASSWORD}@${process.env.PGHOST}/${process.env.PGDATABASE}?sslmode=require&channel_binding=require`;
+    const connectionString = process.env.RAILWAY_PRIVATE_DB_LINK;
     poolConfig = {
         connectionString,
     }
@@ -20,6 +19,7 @@ if(process.env.NODE_ENV === 'production') {
     }
 }
 
+console.log(poolConfig)
 const pool = new Pool(poolConfig);
 
 export const poolQuery = (text: string, params?: any[]) => pool.query(text, params);
