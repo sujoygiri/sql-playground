@@ -11,26 +11,38 @@
       </div>
     </div>
     <div class="query-result">
-      <div *ngIf="queryResultRows">
-        <table class="result-table">
-          <thead>
-            <tr>
-              <th *ngFor="let column of tableColumns">{{ column }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of queryResultRows; let i = index">
-              <td *ngFor="let column of tableColumns">{{ row[column] }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div *ngIf="queryResultString">
-        <div class="result-text">{{ queryResultString }}</div>
-      </div>
-      <div *ngIf="queryErrorResponse">
-        <div class="error-response">{{ queryErrorResponse }}</div>
-      </div>
+      @if (queryResultRows) {
+        <div>
+          <table class="result-table">
+            <thead>
+              <tr>
+                @for (column of tableColumns; track column) {
+                  <th>{{ column }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of queryResultRows; track row; let i = $index) {
+                <tr>
+                  @for (column of tableColumns; track column) {
+                    <td>{{ row[column] }}</td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+      @if (queryResultString) {
+        <div>
+          <div class="result-text">{{ queryResultString }}</div>
+        </div>
+      }
+      @if (queryErrorResponse) {
+        <div>
+          <div class="error-response">{{ queryErrorResponse }}</div>
+        </div>
+      }
     </div>
   </div>
   <div class="sidebar-history"></div>

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
 import { EditorView, basicSetup } from "codemirror";
 import { PostgreSQL, sql } from "@codemirror/lang-sql";
@@ -9,7 +9,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -85,7 +85,7 @@ export class AppComponent implements OnInit, AfterViewInit {
           this.tableColumns = Object.keys(res.rows[0]);
           this.queryResultRows = res.rows;
         }else {
-          this.queryResultString = res.command && `${res.command} runes successfully`
+          this.queryResultString = res.command && `${res.command} executed successfully`
         }
       },
       error: (err: HttpErrorResponse) => {
