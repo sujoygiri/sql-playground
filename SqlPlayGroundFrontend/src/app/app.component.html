@@ -1,49 +1,62 @@
 <div class="container">
   <div class="main">
-    <div class="editor" #editor>
-      <div class="action-btns">
-        <button class="btn btn-run" type="button" (click)="onRunQuery()">
-          Run<span class="short-key">&lpar;Alt+Enter&rpar;</span>
-        </button>
-        <button class="btn btn-save" type="button" (click)="onSave()">
-          Save<span class="short-key">&lpar;Alt+S&rpar;</span>
-        </button>
+    <div class="side_bar">
+      <div class="side_bar_top_items">
+        <div class="side_bar_top_icon">
+          <ng-icon name="matHistoryRound" />
+        </div>
+        <div class="side_bar_top_icon">
+          <ng-icon name="matHistoryRound" />
+        </div>
       </div>
     </div>
-    <div class="query-result">
-      @if (queryResultRows) {
-        <div>
-          <table class="result-table">
-            <thead>
-              <tr>
-                @for (column of tableColumns; track column) {
-                  <th>{{ column }}</th>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of queryResultRows; track row; let i = $index) {
+    <div class="editor_container" >
+      <div class="editor" #editor>
+        <div class="action-btns">
+          <button class="btn btn-run" type="button" (click)="onRunQuery()" title="Run">
+            <ng-icon name="matPlayArrowRound" />
+            <!-- <span class="short-key">&lpar;Alt+Enter&rpar;</span> -->
+          </button>
+          <button class="btn btn-save" type="button" (click)="onSave()" title="Save">
+            <ng-icon name="matSaveRound" />
+            <!-- <span class="short-key">&lpar;Alt+S&rpar;</span> -->
+          </button>
+        </div>
+      </div>
+      <div class="query-result">
+        @if (queryResultRows) {
+          <div>
+            <table class="result-table">
+              <thead>
                 <tr>
                   @for (column of tableColumns; track column) {
-                    <td>{{ row[column] }}</td>
+                    <th>{{ column }}</th>
                   }
                 </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
-      @if (queryResultString) {
-        <div>
-          <div class="result-text">{{ queryResultString }}</div>
-        </div>
-      }
-      @if (queryErrorResponse) {
-        <div>
-          <div class="error-response">{{ queryErrorResponse }}</div>
-        </div>
-      }
+              </thead>
+              <tbody>
+                @for (row of queryResultRows; track row; let i = $index) {
+                  <tr>
+                    @for (column of tableColumns; track column) {
+                      <td>{{ row[column] }}</td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+        @if (queryResultString) {
+          <div>
+            <div class="result-text">{{ queryResultString }}</div>
+          </div>
+        }
+        @if (queryErrorResponse) {
+          <div>
+            <div class="error-response">{{ queryErrorResponse }}</div>
+          </div>
+        }
+      </div>
     </div>
-  </div>
   <div class="sidebar-history"></div>
 </div>

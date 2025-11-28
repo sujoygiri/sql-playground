@@ -1,4 +1,3 @@
-
 import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
 import { EditorView, basicSetup } from "codemirror";
 import { PostgreSQL, sql } from "@codemirror/lang-sql";
@@ -6,12 +5,15 @@ import { autocompletion } from "@codemirror/autocomplete";
 import { oneDark, color } from "@codemirror/theme-one-dark"
 import { AppService } from './app.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import {matHistoryRound, matPlayArrowRound, matSaveRound} from "@ng-icons/material-icons/round";
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  imports: [NgIcon],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
+  viewProviders: [provideIcons({matHistoryRound, matPlayArrowRound, matSaveRound})]
 })
 export class AppComponent implements OnInit, AfterViewInit {
   title = 'SqlPlayGroundFrontend';
